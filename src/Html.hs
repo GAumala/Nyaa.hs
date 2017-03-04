@@ -105,8 +105,8 @@ getSearchResults responseBody = map parseResultRow $ partitions (~== resultRowTa
 
 displaySearchResult :: NyaaResult -> IO ()
 displaySearchResult result = L8.putStrLn $ L8.concat [L8.pack "* ", _title,
-    L8.pack "\n", _size, L8.pack " seeders: ", L8.pack $ show _seeders,
-    L8.pack " leechers: ", L8.pack $ show _leechers, L8.pack " ", _url]
+    L8.pack "\n", _size, L8.pack " ", L8.pack $ show _seeders, L8.pack " seeders, ",
+    L8.pack $ show _leechers, L8.pack " leechers. ", _url, L8.pack "\n"]
     where _title = title result
           _url = url result
           _size = size result
