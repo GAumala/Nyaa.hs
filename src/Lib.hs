@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lib
-    ( someFunc
+    ( searchWithNyaa
     ) where
 
 
@@ -26,12 +26,13 @@ getNyaaSearchUrl query = "https://www.nyaa.se/?page=search&term="
 openNyaaURL :: String -> IO (Response L8.ByteString)
 openNyaaURL x = openURL $ getNyaaSearchUrl x
 
-someFunc :: IO ()
-someFunc = do
-    resp <- openNyaaURL "Kuzu+no+Honkai+deadfish"
-    putStrLn $ "Response Status Code 2: " ++ show (getResponseStatusCode resp)
+searchWithNyaa :: String -> IO ()
+searchWithNyaa query = do
+    putStrLn $ "retreiving URL: " ++ getNyaaSearchUrl query
+    resp <- openNyaaURL query
+    putStrLn $ "Response Status Code : " ++ show (getResponseStatusCode resp)
     let body = getResponseBody resp
     let searchResults = getSearchResults body
     let errors = lefts searchResults
-    if null errors then print $ rights searchResults
+    if null errors then mapM_ displaySearchResult (rights searchResults)
         else print errors

@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Html
-    ( getSearchResults
+    ( displaySearchResult,
+      getSearchResults
     ) where
 
 import Data.Maybe
@@ -101,3 +102,13 @@ getSearchResults responseBody = map parseResultRow $ partitions (~== resultRowTa
     where tags = parseTags responseBody
           rawResults = partitions (~== resultRowTag) tags
           resultRowTag = "<tr class=\"tlistrow remake\">" :: String
+
+displaySearchResult :: NyaaResult -> IO ()
+displaySearchResult result = L8.putStrLn $ L8.concat [L8.pack "* ", _title,
+    L8.pack "\n", _size, L8.pack " seeders: ", L8.pack $ show _seeders,
+    L8.pack " leechers: ", L8.pack $ show _leechers, L8.pack " ", _url]
+    where _title = title result
+          _url = url result
+          _size = size result
+          _seeders = seeders result
+          _leechers = leechers result
