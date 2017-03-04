@@ -4,11 +4,11 @@ Command-line interface for Nyaa Torrents written in Haskell.
 
 ## Installation
 
-Download code from Github and install with stack. Make sure you have added the
-stack installation dir to your path.
+Download code from Github and install with stack. Make sure your PATH 
+environment variable includes `$HOME/.local/bin`.
 
 ```
-git clone
+git clone https://github.com/GAumala/Nyaa.hs
 cd nyaa.hs
 stack install
 ```
