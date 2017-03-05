@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Html
-    ( displaySearchResult,
+    ( displayErrorsList,
+      displayResultsList,
       getSearchResults
     ) where
 
@@ -112,3 +113,30 @@ displaySearchResult result = L8.putStrLn $ L8.concat [L8.pack "* ", _title,
           _size = size result
           _seeders = seeders result
           _leechers = leechers result
+
+displaySearchError :: NyaaParseError -> IO()
+displaySearchError (NyaaParseError TITLE_NOT_FOUND tags) = L8.putStrLn $
+    L8.concat ["Title for torrent file not found.\nHTML:\n", tags]
+displaySearchError (NyaaParseError SIZE_NOT_FOUND tags) = L8.putStrLn $
+    L8.concat ["Size for torrent file not found.\nHTML:\n", tags]
+displaySearchError (NyaaParseError URL_NOT_FOUND tags) = L8.putStrLn $
+    L8.concat ["URL for torrent file not found.\nHTML:\n", tags]
+displaySearchError (NyaaParseError SEEDERS_NOT_FOUND tags) = L8.putStrLn $
+    L8.concat ["Number of seeders for torrent file not found.\nHTML:\n", tags]
+displaySearchError (NyaaParseError LEECHERS_NOT_FOUND tags) = L8.putStrLn $
+    L8.concat ["Number of leechers for torrent file not found.\nHTML:\n", tags]
+
+
+displayResultsList :: [NyaaResult] -> IO()
+displayResultsList [] = putStrLn "No torrents found."
+displayResultsList results = mapM_ displaySearchResult results
+
+displayErrorsList :: String -> [NyaaParseError] -> IO()
+displayErrorsList errorURL errors = do
+    putStrLn "Error. Some results could not be parsed."
+    putStrLn "This is most likely due to changes in Nyaa's HTML code."
+    putStrLn $ "Please submit an issue at " ++ issueURL ++
+        " with the following information:"
+    mapM_ displaySearchError errors
+    putStrLn $ "The complete HTML can be downloaded from " ++ errorURL
+    where issueURL = "https://github.com/GAumala/nyaa.hs/issues/new"
