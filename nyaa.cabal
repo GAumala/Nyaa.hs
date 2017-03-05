@@ -1,13 +1,13 @@
 name:                nyaa
-version:             0.1.0.0
+version:             0.2.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/githubuser/nyaa#readme
+homepage:            https://github.com/GAumala/nyaa.hs#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
+author:              Gabriel Aumala
 maintainer:          example@example.com
-copyright:           2017 Author name here
+copyright:           2017 Gabriel Aumala
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
@@ -45,4 +45,4 @@ test-suite nyaa-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/nyaa
+  location: https://github.com/GAumala/nyaa.hs
