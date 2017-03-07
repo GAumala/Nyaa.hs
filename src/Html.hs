@@ -99,10 +99,16 @@ parseResultRow rowTags
           _leechers = getLeechersFromRow rowTags
 
 getSearchResults :: L8.ByteString -> [Either NyaaParseError NyaaResult]
-getSearchResults responseBody = map parseResultRow $ partitions (~== resultRowTag) tags
+getSearchResults responseBody = map parseResultRow $ mconcat [
+    partitions (~== tlistrowNormal) tags,
+    partitions (~== tlistrowRemake) tags,
+    partitions (~== tlistrowTrusted) tags,
+    partitions (~== tlistrowAplus) tags ]
     where tags = parseTags responseBody
-          rawResults = partitions (~== resultRowTag) tags
-          resultRowTag = "<tr class=\"tlistrow remake\">" :: String
+          tlistrowNormal = "<tr class=\"tlistrow\">" :: String
+          tlistrowRemake = "<tr class=\"tlistrow remake\">" :: String
+          tlistrowTrusted = "<tr class=\"tlistrow trusted\">" :: String
+          tlistrowAplus = "<tr class=\"tlistrow aplus\">" :: String
 
 displaySearchResult :: NyaaResult -> IO ()
 displaySearchResult result = L8.putStrLn $ L8.concat [L8.pack "* ", _title,
@@ -116,15 +122,15 @@ displaySearchResult result = L8.putStrLn $ L8.concat [L8.pack "* ", _title,
 
 displaySearchError :: NyaaParseError -> IO()
 displaySearchError (NyaaParseError TITLE_NOT_FOUND tags) = L8.putStrLn $
-    L8.concat ["Title for torrent file not found.\nHTML:\n", tags]
+    L8.concat ["Title for torrent file not found.\nHTML:\n", tags, "\n"]
 displaySearchError (NyaaParseError SIZE_NOT_FOUND tags) = L8.putStrLn $
-    L8.concat ["Size for torrent file not found.\nHTML:\n", tags]
+    L8.concat ["Size for torrent file not found.\nHTML:\n", tags, "\n"]
 displaySearchError (NyaaParseError URL_NOT_FOUND tags) = L8.putStrLn $
-    L8.concat ["URL for torrent file not found.\nHTML:\n", tags]
+    L8.concat ["URL for torrent file not found.\nHTML:\n", tags, "\n"]
 displaySearchError (NyaaParseError SEEDERS_NOT_FOUND tags) = L8.putStrLn $
-    L8.concat ["Number of seeders for torrent file not found.\nHTML:\n", tags]
+    L8.concat ["Number of seeders for torrent file not found.\nHTML:\n", tags, "\n"]
 displaySearchError (NyaaParseError LEECHERS_NOT_FOUND tags) = L8.putStrLn $
-    L8.concat ["Number of leechers for torrent file not found.\nHTML:\n", tags]
+    L8.concat ["Number of leechers for torrent file not found.\nHTML:\n", tags, "\n"]
 
 
 displayResultsList :: [NyaaResult] -> IO()
@@ -133,10 +139,10 @@ displayResultsList results = mapM_ displaySearchResult results
 
 displayErrorsList :: String -> [NyaaParseError] -> IO()
 displayErrorsList errorURL errors = do
-    putStrLn "Error. Some results could not be parsed."
+    putStrLn "Error: Some results could not be parsed."
     putStrLn "This is most likely due to changes in Nyaa's HTML code."
     putStrLn $ "Please submit an issue at " ++ issueURL ++
-        " with the following information:"
+        " with the following information:\n"
     mapM_ displaySearchError errors
     putStrLn $ "The complete HTML can be downloaded from " ++ errorURL
     where issueURL = "https://github.com/GAumala/nyaa.hs/issues/new"
